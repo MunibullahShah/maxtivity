@@ -38,7 +38,8 @@ extension JsonToDate on Map<String, dynamic> {
 }
 
 extension DateToFormatString on DateTime {
-  String toFormattedDateTimeString() => DateFormat("MMMM dd, yyyy").format(this);
+  String toFormattedDateTimeString() =>
+      DateFormat("MMMM dd, yyyy, HH:mm ").format(this);
 }
 
 extension DateToNumberFormatString on DateTime {

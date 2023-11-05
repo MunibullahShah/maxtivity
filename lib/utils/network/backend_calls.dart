@@ -21,7 +21,10 @@ class BackendCall {
       Uri uri = _getUri(endpoint);
       response = await post(
         uri,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          "x-auth-token": tokenRequired ? jwtToken : ""
+        },
         body: jsonEncode(body),
       );
       responseStr = responseHandler(response);

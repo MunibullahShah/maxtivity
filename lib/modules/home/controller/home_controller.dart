@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:maxtivity/modules/home/repository/home_repository.dart';
+import 'package:maxtivity/utils/ui/snackbar.dart';
 
 class HomeController extends GetxController {
   late Timer timer;
   double progressValue = 1;
   int secondsPassed = 0;
+  int timeInterval = 4;
   bool isPaused = true;
   DateTime? startTime;
   DateTime? endTime;
@@ -20,12 +23,13 @@ class HomeController extends GetxController {
     isPaused = false;
     startTime = DateTime.now();
     timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      progressValue = ((25 * 60) - secondsPassed) / (25 * 60);
+      progressValue =
+          ((timeInterval * 60) - secondsPassed) / (timeInterval * 60);
       update();
       secondsPassed++;
-      if (secondsPassed == (25 * 60)) {
+      if (secondsPassed == (timeInterval * 60)) {
         saveTime();
-        pauseTimer();
+        resetTimer();
       }
     });
   }
@@ -40,7 +44,7 @@ class HomeController extends GetxController {
   }
 
   String getMinutes() {
-    int minutes = (1 * 60) - secondsPassed;
+    int minutes = (timeInterval * 60) - secondsPassed;
     int min = minutes ~/ 60;
     int sec = minutes % 60;
     return "${min}:${sec}";
@@ -55,7 +59,13 @@ class HomeController extends GetxController {
   }
 
   void saveTime() async {
-    endTime = DateTime.now();
-    var data = HomeRepository().saveTime(startTime!, endTime!);
+    try {
+      endTime = DateTime.now();
+      String response = await HomeRepository().saveTime(startTime!, endTime!);
+      if (response == "200") {
+        getSuccessSnackbar(
+            title: "Success", message: "Time Saved Successfully");
+      }
+    } catch (e) {}
   }
 }

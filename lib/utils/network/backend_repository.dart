@@ -44,11 +44,29 @@ class BackendRepository {
 
   getHistory() async {
     try {
-      var response = await BackendCall()
-          .getRequest(endpoint: historyEndpoint, tokenRequired: true);
+      var response = await BackendCall().getRequest(
+        endpoint: historyEndpoint,
+        tokenRequired: true,
+      );
       return response;
     } catch (e) {
       print(e);
+      throw Exception(e);
+    }
+  }
+
+  saveTime(DateTime startTime, DateTime endTime) async {
+    try {
+      var response = await BackendCall().postRequest(
+        endpoint: saveTimeEndpoint,
+        tokenRequired: true,
+        body: {
+          "start_time": startTime.toIso8601String(),
+          "end_time": endTime.toIso8601String(),
+        },
+      );
+      return response;
+    } catch (e) {
       throw Exception(e);
     }
   }
