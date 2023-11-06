@@ -48,48 +48,59 @@ class HistoryView extends StatelessWidget {
                     ? Center(
                         child: CircularProgressIndicator(),
                       )
-                    : ListView.builder(
-                        itemCount: logic.historyList.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Card(
-                              elevation: 5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    CustomText(
-                                      text: 'Start Time:',
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    CustomText(
-                                      text: logic.historyList[index].startTime!
-                                          .toLocal()
-                                          .toFormattedDateTimeString(),
-                                      fontSize: 14,
-                                    ),
-                                    SizedBox(height: 16),
-                                    CustomText(
-                                      text: 'End Time:',
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    CustomText(
-                                      text: logic.historyList[index].endTime!
-                                          .toLocal()
-                                          .toFormattedDateTimeString(),
-                                      fontSize: 14,
-                                    ),
-                                  ],
-                                ),
-                              ),
+                    : (logic.historyList.length == 0
+                        ? Center(
+                            child: CustomText(
+                              text: 'No History Found',
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
                             ),
-                          );
-                        },
-                      ),
+                          )
+                        : ListView.builder(
+                            itemCount: logic.historyList.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Card(
+                                  elevation: 5,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        CustomText(
+                                          text: 'Start Time:',
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        CustomText(
+                                          text: logic
+                                              .historyList[index].startTime!
+                                              .toLocal()
+                                              .toFormattedDateTimeString(),
+                                          fontSize: 14,
+                                        ),
+                                        SizedBox(height: 16),
+                                        CustomText(
+                                          text: 'End Time:',
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        CustomText(
+                                          text: logic
+                                              .historyList[index].endTime!
+                                              .toLocal()
+                                              .toFormattedDateTimeString(),
+                                          fontSize: 14,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          )),
               )
             ],
           ),

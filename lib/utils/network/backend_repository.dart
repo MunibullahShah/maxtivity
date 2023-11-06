@@ -61,8 +61,8 @@ class BackendRepository {
         endpoint: saveTimeEndpoint,
         tokenRequired: true,
         body: {
-          "start_time": startTime.toIso8601String(),
-          "end_time": endTime.toIso8601String(),
+          "startTime": startTime.toIso8601String(),
+          "endTime": endTime.toIso8601String(),
         },
       );
       return response;
