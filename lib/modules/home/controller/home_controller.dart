@@ -9,7 +9,7 @@ class HomeController extends GetxController {
   late Timer timer;
   double progressValue = 1;
   int secondsPassed = 0;
-  int timeInterval = 2;
+  int timeInterval = 25;
   bool isPaused = true;
   DateTime? startTime;
   DateTime? endTime;

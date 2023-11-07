@@ -116,7 +116,7 @@ class _SignupScreenState extends State<SignupScreen> {
     return Container(
       margin: EdgeInsets.only(top: screenHeight * 0.02),
       child: CustomTextField(
-        keyboardType: TextInputType.phone,
+        keyboardType: TextInputType.emailAddress,
         validationFunction: (value) {
           if (value!.isEmpty) {
             return 'Please enter your email';

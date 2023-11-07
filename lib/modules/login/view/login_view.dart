@@ -69,7 +69,7 @@ class LoginView extends StatelessWidget {
                               }
                               return null;
                             },
-                            keyboardType: TextInputType.phone,
+                            keyboardType: TextInputType.emailAddress,
                             hintText: 'Enter your email',
                             prefixIcon: Padding(
                               padding: EdgeInsets.all(screenWidth * 0.04),

@@ -15,8 +15,8 @@ class HistoryModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['endTime'] = startTime?.toIso8601String();
-    data['endTime'] = endTime?.toIso8601String();
+    data['endTime'] = startTime;
+    data['endTime'] = endTime;
     return data;
   }
 }
