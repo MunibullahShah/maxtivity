@@ -1,17 +1,12 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:maxtivity/constants/app_constants.dart';
 import 'package:maxtivity/constants/asset_paths.dart';
-import 'package:maxtivity/modules/splash/controller/splash_controller.dart';
 import 'package:maxtivity/utils/ui/custom_text.dart';
 
-import '../../../../../constants/constants.dart';
-import '../../../../../main.dart';
-
+@RoutePage()
 class SplashPage extends StatelessWidget {
   SplashPage({Key? key}) : super(key: key);
-
-  SplashController splashController = Get.put(SplashController());
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +29,7 @@ class SplashPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: screenHeight * 0.05),
-            CustomText(
-              text: "Maxtivity",
-              fontSize: 35,
-            ),
+            CustomText(text: "Maxtivity", fontSize: 35),
           ],
         ),
       ),

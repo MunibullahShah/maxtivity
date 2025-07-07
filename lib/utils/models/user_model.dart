@@ -1,8 +1,4 @@
-import 'package:objectbox/objectbox.dart';
-
-@Entity()
 class UserModel {
-  @Id(assignable: true)
   int? id;
 
   String? name;
