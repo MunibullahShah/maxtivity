@@ -6,7 +6,7 @@ import 'package:maxtivity/utils/ui/custom_text.dart';
 
 @RoutePage()
 class SplashPage extends StatelessWidget {
-  SplashPage({Key? key}) : super(key: key);
+  const SplashPage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -43,3 +43,19 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+/android/app/.cxx
+
+# firebase files
+# Firebase files
+firebase-debug.log
+firebase-debug.*.log
+google-services.json
+google-services.xml
+*.plist
+firebase.json
+/lib/firebase_options.dart
+
+
+# add all files with .g.dart or .freezed.dart extensions
+**/*.g.dart
+**/*.freezed.dart
