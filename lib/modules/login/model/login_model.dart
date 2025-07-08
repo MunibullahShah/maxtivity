@@ -1,22 +1,16 @@
-class LoginModel {
-  String? username;
-  String? password;
-  int? agentSeatId;
-  int? companyId;
-  String? token;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  LoginModel({this.username, this.password});
+part 'login_model.g.dart';
+part 'login_model.freezed.dart';
 
-  LoginModel.fromJson(Map<String, dynamic> json) {
-    agentSeatId = json['agent_seat_id'];
-    companyId = json['company_id'];
-    token = json['token'];
-  }
+@freezed
+abstract class LoginModel with _$LoginModel {
+  const factory LoginModel({
+    String? username,
+    String? password,
+    String? token,
+  }) = _LoginModel;
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['username'] = this.username;
-    data['password'] = this.password;
-    return data;
-  }
+  factory LoginModel.fromJson(Map<String, dynamic> json) =>
+      _$LoginModelFromJson(json);
 }

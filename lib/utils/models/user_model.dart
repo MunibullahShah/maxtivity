@@ -1,28 +1,17 @@
-import 'package:objectbox/objectbox.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter/foundation.dart';
+part 'user_model.freezed.dart';
+part 'user_model.g.dart';
 
-@Entity()
-class UserModel {
-  @Id(assignable: true)
-  int? id;
+@freezed
+abstract class UserModel with _$UserModel {
+  const factory UserModel({
+    int? id,
+    String? name,
+    String? email,
+    String? password,
+  }) = _UserModel;
 
-  String? name;
-  String? email;
-  String? password;
-
-  UserModel({this.id, this.name, this.email, this.password});
-
-  UserModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    email = json['email'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id ?? 0;
-    data['name'] = this.name ?? "";
-    data['email'] = this.email ?? "";
-    data['password'] = this.password ?? "";
-    return data;
-  }
+  factory UserModel.fromJson(Map<String, Object?> json) =>
+      _$UserModelFromJson(json);
 }

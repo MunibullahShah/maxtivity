@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:maxtivity/config/theme/app_colors.dart';
 import 'package:sizer/sizer.dart';
 
@@ -35,17 +34,19 @@ class CustomText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AutoSizeText(
-      text.tr,
+      text,
       maxLines: maxLines,
       overflow: overflow,
       textAlign: textAlign,
-      style: style ??
+      style:
+          style ??
           TextStyle(
-              height: height,
-              fontFamily: 'Poppins',
-              fontWeight: fontWeight,
-              fontSize: fontSize.sp,
-              color: color ?? AppColors().secondary),
+            height: height,
+            fontFamily: 'Poppins',
+            fontWeight: fontWeight,
+            fontSize: fontSize.sp,
+            color: color ?? AppColors().secondary,
+          ),
     );
   }
 }
