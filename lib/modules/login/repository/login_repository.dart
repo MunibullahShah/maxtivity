@@ -1,6 +1,5 @@
-import 'dart:convert';
-
-import 'package:maxtivity/utils/network/backend_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:maxtivity/utils/services/auth_service.dart';
 import 'package:maxtivity/utils/ui/snackbar.dart';
 
 class LoginRepository {
@@ -8,20 +7,22 @@ class LoginRepository {
     required String email,
     required String password,
   }) async {
-    String loginResponse = await BackendRepository().login(
-      email: email,
-      password: password,
-    );
-    var decodedResponse = jsonDecode(loginResponse);
-    if (decodedResponse['status'] == "400" ||
-        decodedResponse['status'] == "500" ||
-        decodedResponse['status'] == "300") {
+    try {
+      final user = await AuthService.instance.signIn(
+        email: email,
+        password: password,
+      );
+      final token = await user?.getIdToken();
+      return token ?? "";
+    } on FirebaseAuthException catch (e) {
       getErrorSnackbar(
-        title: "Error",
-        message: decodedResponse['message']["error"].toString(),
+        title: "Auth Error",
+        message: e.message ?? "Unknown error",
       );
       return "";
+    } catch (_) {
+      getErrorSnackbar(title: "Error", message: "Login failed");
+      return "";
     }
-    return decodedResponse['message']["token"];
   }
 }

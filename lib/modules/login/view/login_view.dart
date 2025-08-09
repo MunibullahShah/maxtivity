@@ -1,3 +1,4 @@
+// ignore_for_file: unused_import
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -10,6 +11,10 @@ import 'package:maxtivity/utils/ui/buttons/primary_button.dart';
 import 'package:maxtivity/utils/ui/custom_text.dart';
 import 'package:maxtivity/utils/ui/drawer/custom_drawer.dart';
 import 'package:maxtivity/utils/ui/textfields/custom_textfield.dart';
+import 'package:maxtivity/modules/home/view/home_view.dart';
+import 'package:maxtivity/modules/login/repository/login_repository.dart';
+import 'package:maxtivity/utils/services/local_storage_service.dart';
+import 'package:maxtivity/utils/ui/loader.dart';
 
 const String loginRoute = '/login';
 
@@ -20,6 +25,31 @@ class LoginView extends StatelessWidget {
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  Future<void> _login(BuildContext context) async {
+    if (!_formKey.currentState!.validate()) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Loader(),
+    );
+    try {
+      final token = await LoginRepository().login(
+        email: emailController.text.trim(),
+        password: passwordController.text,
+      );
+      Navigator.of(context).pop(); // close loader
+      if (token.isNotEmpty) {
+        jwtToken = token;
+        await LocalStorageService().setToken(token);
+        Navigator.of(
+          context,
+        ).pushReplacement(MaterialPageRoute(builder: (_) => HomeView()));
+      }
+    } catch (_) {
+      Navigator.of(context).pop();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,9 +168,7 @@ class LoginView extends StatelessWidget {
                   bottom: screenHeight * 0.02,
                 ),
                 child: PrimaryButton(
-                  onTap: () {
-                    if (_formKey.currentState!.validate()) {}
-                  },
+                  onTap: () => _login(context),
                   text: 'Log In',
                 ),
               ),

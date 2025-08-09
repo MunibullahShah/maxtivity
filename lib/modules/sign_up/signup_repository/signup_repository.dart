@@ -1,7 +1,7 @@
-import 'dart:convert';
-
-import 'package:maxtivity/utils/models/user_model.dart';
-import 'package:maxtivity/utils/network/backend_repository.dart';
+// ignore_for_file: unused_import
+// (user_model import currently unused; future enhancement)
+import 'package:maxtivity/utils/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:maxtivity/utils/ui/snackbar.dart';
 
 class SignUpRepository {
@@ -11,21 +11,18 @@ class SignUpRepository {
     required String password,
   }) async {
     try {
-      var response = await BackendRepository()
-          .signUp(name: name, email: email, password: password);
-      var decodedResponse = jsonDecode(response);
-      if (decodedResponse['status'] == "400" ||
-          decodedResponse['status'] == "500" ||
-          decodedResponse['status'] == "300") {
-        getErrorSnackbar(
-            title: "Error",
-            message: decodedResponse['message']["error"].toString());
-        return "";
-      }
-      return decodedResponse['message']["token"];
-    } catch (e) {
-      print(e);
-      throw Exception(e);
+      final user = await AuthService.instance.signUp(
+        email: email,
+        password: password,
+      );
+      // Could save name in Firestore later.
+      return user?.uid ?? "";
+    } on FirebaseAuthException catch (e) {
+      getErrorSnackbar(
+        title: "Auth Error",
+        message: e.message ?? "Unknown error",
+      );
+      return "";
     }
   }
 }

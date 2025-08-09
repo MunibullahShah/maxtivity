@@ -3,11 +3,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:maxtivity/config/theme/app_colors.dart';
 import 'package:maxtivity/constants/app_constants.dart';
 import 'package:maxtivity/constants/asset_paths.dart';
-import 'package:maxtivity/modules/login/view/login_view.dart';
-import 'package:maxtivity/modules/login/widgets/password_visibility.dart';
 import 'package:maxtivity/utils/ui/buttons/primary_button.dart';
 import 'package:maxtivity/utils/ui/custom_text.dart';
 import 'package:maxtivity/utils/ui/textfields/custom_textfield.dart';
+import 'package:maxtivity/modules/sign_up/signup_repository/signup_repository.dart';
+import 'package:maxtivity/modules/home/view/home_view.dart';
+import 'package:maxtivity/utils/services/local_storage_service.dart';
+import 'package:maxtivity/utils/ui/loader.dart';
 
 const String signUpRoute = '/signUp';
 
@@ -24,6 +26,33 @@ class _SignupScreenState extends State<SignupScreen> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  Future<void> _signUp(BuildContext context) async {
+    if (!_formKey.currentState!.validate()) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Loader(),
+    );
+    try {
+      final uid = await SignUpRepository().signUp(
+        name: nameController.text.trim(),
+        email: emailController.text.trim(),
+        password: passwordController.text,
+      );
+      Navigator.of(context).pop();
+      if (uid.isNotEmpty) {
+        jwtToken = uid; // store uid for now
+        await LocalStorageService().setToken(uid);
+        Navigator.of(
+          context,
+        ).pushReplacement(MaterialPageRoute(builder: (_) => HomeView()));
+      }
+    } catch (_) {
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,6 +124,7 @@ class _SignupScreenState extends State<SignupScreen> {
           if (value!.isEmpty) {
             return 'Please enter your name';
           }
+          return null;
         },
         hintText: 'Enter your Name',
         prefixIcon: Padding(
@@ -115,6 +145,7 @@ class _SignupScreenState extends State<SignupScreen> {
           if (value!.isEmpty) {
             return 'Please enter your email';
           }
+          return null;
         },
         hintText: 'Enter your email',
         prefixIcon: Padding(
@@ -136,6 +167,7 @@ class _SignupScreenState extends State<SignupScreen> {
           } else if (value.length < 6) {
             return 'Password must be at least 6 characters';
           }
+          return null;
         },
         hintText: 'Enter your Password',
         maxLines: 1,
@@ -189,7 +221,7 @@ class _SignupScreenState extends State<SignupScreen> {
         text: "Sign Up",
         fontSize: 14,
         fontWeight: FontWeight.w500,
-        onTap: () {},
+        onTap: () => _signUp(context),
       ),
     );
   }
