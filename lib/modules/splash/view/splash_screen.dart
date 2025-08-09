@@ -1,10 +1,8 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:maxtivity/constants/app_constants.dart';
 import 'package:maxtivity/constants/asset_paths.dart';
 import 'package:maxtivity/utils/ui/custom_text.dart';
 
-@RoutePage()
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
 

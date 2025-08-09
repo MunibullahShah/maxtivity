@@ -1,4 +1,3 @@
-// ignore_for_file: unused_import
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -6,49 +5,39 @@ import 'package:maxtivity/config/theme/app_colors.dart';
 import 'package:maxtivity/constants/app_constants.dart';
 import 'package:maxtivity/constants/asset_paths.dart';
 import 'package:maxtivity/modules/login/widgets/password_visibility.dart';
-import 'package:maxtivity/modules/sign_up/view/signup_view.dart';
 import 'package:maxtivity/utils/ui/buttons/primary_button.dart';
 import 'package:maxtivity/utils/ui/custom_text.dart';
-import 'package:maxtivity/utils/ui/drawer/custom_drawer.dart';
 import 'package:maxtivity/utils/ui/textfields/custom_textfield.dart';
-import 'package:maxtivity/modules/home/view/home_view.dart';
-import 'package:maxtivity/modules/login/repository/login_repository.dart';
-import 'package:maxtivity/utils/services/local_storage_service.dart';
-import 'package:maxtivity/utils/ui/loader.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:maxtivity/modules/auth/auth_provider.dart';
+import 'package:go_router/go_router.dart';
 
 const String loginRoute = '/login';
 
-class LoginView extends StatelessWidget {
-  LoginView({Key? key}) : super(key: key);
+class LoginView extends ConsumerStatefulWidget {
+  const LoginView({super.key});
 
+  @override
+  ConsumerState<LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends ConsumerState<LoginView> {
   final _formKey = GlobalKey<FormState>();
-
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool obscurePassword = true;
 
-  Future<void> _login(BuildContext context) async {
+  void _login() {
     if (!_formKey.currentState!.validate()) return;
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => const Loader(),
-    );
-    try {
-      final token = await LoginRepository().login(
-        email: emailController.text.trim(),
-        password: passwordController.text,
-      );
-      Navigator.of(context).pop(); // close loader
-      if (token.isNotEmpty) {
-        jwtToken = token;
-        await LocalStorageService().setToken(token);
-        Navigator.of(
-          context,
-        ).pushReplacement(MaterialPageRoute(builder: (_) => HomeView()));
-      }
-    } catch (_) {
-      Navigator.of(context).pop();
-    }
+    ref
+        .read(authNotifierProvider.notifier)
+        .signIn(emailController.text.trim(), passwordController.text);
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      obscurePassword = !obscurePassword;
+    });
   }
 
   @override
@@ -88,6 +77,10 @@ class LoginView extends StatelessWidget {
                   validationFunction: (value) {
                     if (value!.isEmpty) {
                       return 'Please enter your email';
+                    } else if (!RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    ).hasMatch(value)) {
+                      return 'Please enter a valid email';
                     }
                     return null;
                   },
@@ -115,6 +108,11 @@ class LoginView extends StatelessWidget {
                   child: SvgPicture.asset(lockIcon),
                 ),
                 controller: passwordController,
+                obscureText: obscurePassword,
+                suffixIcon: PasswordVisibility(
+                  obscurePassword: obscurePassword,
+                  onTap: _togglePasswordVisibility,
+                ),
               ),
               SizedBox(height: screenHeight * 0.02),
               // InkWell(
@@ -150,7 +148,9 @@ class LoginView extends StatelessWidget {
                     InkWell(
                       splashColor: AppColors().transparent,
                       highlightColor: AppColors().transparent,
-                      onTap: () {},
+                      onTap: () {
+                        context.go('/signup');
+                      },
                       child: CustomText(
                         text: "Create now",
                         fontSize: 13,
@@ -167,10 +167,7 @@ class LoginView extends StatelessWidget {
                   right: screenWidth * 0.01,
                   bottom: screenHeight * 0.02,
                 ),
-                child: PrimaryButton(
-                  onTap: () => _login(context),
-                  text: 'Log In',
-                ),
+                child: PrimaryButton(onTap: _login, text: 'Log In'),
               ),
             ],
           ),

@@ -1,56 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
+
 import 'package:maxtivity/config/theme/app_colors.dart';
 import 'package:maxtivity/constants/app_constants.dart';
 import 'package:maxtivity/constants/asset_paths.dart';
+import 'package:maxtivity/modules/login/widgets/password_visibility.dart';
 import 'package:maxtivity/utils/ui/buttons/primary_button.dart';
 import 'package:maxtivity/utils/ui/custom_text.dart';
 import 'package:maxtivity/utils/ui/textfields/custom_textfield.dart';
-import 'package:maxtivity/modules/sign_up/signup_repository/signup_repository.dart';
-import 'package:maxtivity/modules/home/view/home_view.dart';
-import 'package:maxtivity/utils/services/local_storage_service.dart';
-import 'package:maxtivity/utils/ui/loader.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:maxtivity/modules/auth/auth_provider.dart';
+import 'package:go_router/go_router.dart';
 
 const String signUpRoute = '/signUp';
 
-class SignupScreen extends StatefulWidget {
-  const SignupScreen({Key? key}) : super(key: key);
+class SignupScreen extends ConsumerStatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  ConsumerState<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _SignupScreenState extends ConsumerState<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
-
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool obscurePassword = true;
 
-  Future<void> _signUp(BuildContext context) async {
+  void _signUp() {
     if (!_formKey.currentState!.validate()) return;
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => const Loader(),
-    );
-    try {
-      final uid = await SignUpRepository().signUp(
-        name: nameController.text.trim(),
-        email: emailController.text.trim(),
-        password: passwordController.text,
-      );
-      Navigator.of(context).pop();
-      if (uid.isNotEmpty) {
-        jwtToken = uid; // store uid for now
-        await LocalStorageService().setToken(uid);
-        Navigator.of(
-          context,
-        ).pushReplacement(MaterialPageRoute(builder: (_) => HomeView()));
-      }
-    } catch (_) {
-      Navigator.of(context).pop();
-    }
+    ref
+        .read(authNotifierProvider.notifier)
+        .signUp(emailController.text.trim(), passwordController.text);
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      obscurePassword = !obscurePassword;
+    });
   }
 
   @override
@@ -144,6 +132,10 @@ class _SignupScreenState extends State<SignupScreen> {
         validationFunction: (value) {
           if (value!.isEmpty) {
             return 'Please enter your email';
+          } else if (!RegExp(
+            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+          ).hasMatch(value)) {
+            return 'Please enter a valid email';
           }
           return null;
         },
@@ -169,6 +161,11 @@ class _SignupScreenState extends State<SignupScreen> {
           }
           return null;
         },
+        obscureText: obscurePassword,
+        suffixIcon: PasswordVisibility(
+          obscurePassword: obscurePassword,
+          onTap: _togglePasswordVisibility,
+        ),
         hintText: 'Enter your Password',
         maxLines: 1,
         prefixIcon: Padding(
@@ -197,7 +194,9 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
           SizedBox(width: screenWidth * 0.02),
           InkWell(
-            onTap: () {},
+            onTap: () {
+              context.go('/login');
+            },
             child: CustomText(
               text: "Login",
               fontSize: 13,
@@ -221,7 +220,7 @@ class _SignupScreenState extends State<SignupScreen> {
         text: "Sign Up",
         fontSize: 14,
         fontWeight: FontWeight.w500,
-        onTap: () => _signUp(context),
+        onTap: _signUp,
       ),
     );
   }
