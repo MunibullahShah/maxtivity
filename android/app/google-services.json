@@ -1,0 +1,163 @@
+{
+  "project_info": {
+    "project_number": "24514339128",
+    "firebase_url": "https://sage-wave-251008.firebaseio.com",
+    "project_id": "sage-wave-251008",
+    "storage_bucket": "sage-wave-251008.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:24514339128:android:52816ecd07610069fb61cd",
+        "android_client_info": {
+          "package_name": "com.example.chat_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "24514339128-fkkoaojerenotim3k3av02ldhq1m7nfn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.chat_app",
+            "certificate_hash": "a31397b058bfb6704e435dae83e03d2ed82a5a15"
+          }
+        },
+        {
+          "client_id": "24514339128-mbahib96b8osumt2nn1pp53qk3iak5m3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCqbWOH2I1bUvUlSf6iuUmA5Mcr2bV81c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "24514339128-1k4g6bupqmq17dpt3psu3613866dc5bg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "24514339128-dildop7r7o2tsu7uoghubraedsf03ojd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.maxtivity"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:24514339128:android:61fea1e843c7ca0efb61cd",
+        "android_client_info": {
+          "package_name": "com.example.maxtivity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "24514339128-mbahib96b8osumt2nn1pp53qk3iak5m3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCqbWOH2I1bUvUlSf6iuUmA5Mcr2bV81c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "24514339128-1k4g6bupqmq17dpt3psu3613866dc5bg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "24514339128-dildop7r7o2tsu7uoghubraedsf03ojd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.maxtivity"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:24514339128:android:85b0e9c6f6ad8045fb61cd",
+        "android_client_info": {
+          "package_name": "com.example.nasa_flutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "24514339128-mbahib96b8osumt2nn1pp53qk3iak5m3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCqbWOH2I1bUvUlSf6iuUmA5Mcr2bV81c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "24514339128-1k4g6bupqmq17dpt3psu3613866dc5bg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "24514339128-dildop7r7o2tsu7uoghubraedsf03ojd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.maxtivity"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:24514339128:android:315fd9bf5371d9a4fb61cd",
+        "android_client_info": {
+          "package_name": "com.example.push_notification"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "24514339128-mbahib96b8osumt2nn1pp53qk3iak5m3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCqbWOH2I1bUvUlSf6iuUmA5Mcr2bV81c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "24514339128-1k4g6bupqmq17dpt3psu3613866dc5bg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "24514339128-dildop7r7o2tsu7uoghubraedsf03ojd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.maxtivity"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

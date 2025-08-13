@@ -1,7 +1,4 @@
-import 'dart:convert';
-
-import 'package:maxtivity/utils/models/user_model.dart';
-import 'package:maxtivity/utils/network/backend_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:maxtivity/utils/ui/snackbar.dart';
 
 class SignUpRepository {
@@ -11,21 +8,37 @@ class SignUpRepository {
     required String password,
   }) async {
     try {
-      var response = await BackendRepository()
-          .signUp(name: name, email: email, password: password);
-      var decodedResponse = jsonDecode(response);
-      if (decodedResponse['status'] == "400" ||
-          decodedResponse['status'] == "500" ||
-          decodedResponse['status'] == "300") {
-        getErrorSnackbar(
-            title: "Error",
-            message: decodedResponse['message']["error"].toString());
-        return "";
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+
+      // Optionally set display name
+      if (name.isNotEmpty) {
+        await credential.user?.updateDisplayName(name);
       }
-      return decodedResponse['message']["token"];
+
+      final token = await credential.user?.getIdToken();
+      return token ?? "";
+    } on FirebaseAuthException catch (e) {
+      String message = 'Sign up failed';
+      switch (e.code) {
+        case 'email-already-in-use':
+          message = 'Email already in use';
+          break;
+        case 'invalid-email':
+          message = 'Invalid email address';
+          break;
+        case 'operation-not-allowed':
+          message = 'Operation not allowed';
+          break;
+        case 'weak-password':
+          message = 'Weak password';
+          break;
+      }
+      getErrorSnackbar(title: 'Error', message: message);
+      return "";
     } catch (e) {
-      print(e);
-      throw Exception(e);
+      getErrorSnackbar(title: 'Error', message: 'Something went wrong');
+      return "";
     }
   }
 }

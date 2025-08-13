@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>24514339128-dildop7r7o2tsu7uoghubraedsf03ojd.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.24514339128-dildop7r7o2tsu7uoghubraedsf03ojd</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>24514339128-7puhf8723jgna5c9dbqrnnmnr5rsj8ov.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDrcYL0lVqPsfD8zR2Bd_QvMNgrYJ5LRv0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>24514339128</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.maxtivity</string>
+	<key>PROJECT_ID</key>
+	<string>sage-wave-251008</string>
+	<key>STORAGE_BUCKET</key>
+	<string>sage-wave-251008.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:24514339128:ios:72c6de5a0cdb5285fb61cd</string>
+	<key>DATABASE_URL</key>
+	<string>https://sage-wave-251008.firebaseio.com</string>
+</dict>
+</plist>

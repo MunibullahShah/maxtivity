@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
-import 'package:maxtivity/constants/app_constants.dart';
-import 'package:maxtivity/main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:maxtivity/modules/home/view/home_view.dart';
 import 'package:maxtivity/modules/login/view/login_view.dart';
 
@@ -12,10 +11,16 @@ class SplashController extends GetxController {
     Future.delayed(
       const Duration(seconds: 2),
       () async {
-        jwtToken = await LocalStorageService().getToken() ?? "";
-        if (jwtToken != "") {
+        // Prefer Firebase auth state; fallback to stored token if needed
+        final currentUser = FirebaseAuth.instance.currentUser;
+        if (currentUser != null) {
           Get.off(() => HomeView());
         } else {
+          final token = await LocalStorageService().getToken() ?? "";
+          if (token.isNotEmpty) {
+            Get.off(() => HomeView());
+            return;
+          }
           Get.off(() => LoginView());
         }
       },

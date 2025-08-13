@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:maxtivity/config/theme/app_theme.dart';
 import 'package:maxtivity/modules/home/view/home_view.dart';
 import 'package:maxtivity/modules/splash/view/splash_screen.dart';
 import 'package:maxtivity/utils/services/object_box.dart';
 import 'package:sizer/sizer.dart';
+import 'firebase_options.dart';
 
 late ObjectBox objectBox;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   objectBox = await ObjectBox.create();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
