@@ -1,80 +1,66 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:maxtivity/config/theme/app_colors.dart';
 import 'package:maxtivity/constants/app_constants.dart';
 import 'package:maxtivity/constants/asset_paths.dart';
+import 'package:maxtivity/modules/login/view/login_view.dart';
 import 'package:maxtivity/modules/login/widgets/password_visibility.dart';
+import 'package:maxtivity/modules/sign_up/controller/signup_controller.dart';
 import 'package:maxtivity/utils/ui/buttons/primary_button.dart';
 import 'package:maxtivity/utils/ui/custom_text.dart';
 import 'package:maxtivity/utils/ui/textfields/custom_textfield.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:maxtivity/modules/auth/auth_provider.dart';
-import 'package:go_router/go_router.dart';
 
 const String signUpRoute = '/signUp';
 
-class SignupScreen extends ConsumerStatefulWidget {
-  const SignupScreen({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({Key? key}) : super(key: key);
 
   @override
-  ConsumerState<SignupScreen> createState() => _SignupScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _SignupScreenState extends ConsumerState<SignupScreen> {
+class _SignupScreenState extends State<SignupScreen> {
+  final SignUpController signUpController = Get.put(SignUpController());
   final _formKey = GlobalKey<FormState>();
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  bool obscurePassword = true;
-
-  void _signUp() {
-    if (!_formKey.currentState!.validate()) return;
-    ref
-        .read(authNotifierProvider.notifier)
-        .signUp(emailController.text.trim(), passwordController.text);
-  }
-
-  void _togglePasswordVisibility() {
-    setState(() {
-      obscurePassword = !obscurePassword;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Form(
-        key: _formKey,
-        child: SafeArea(
-          child: Container(
-            alignment: Alignment.center,
-            margin: EdgeInsets.only(
-              top: screenHeight * 0.06,
-              left: screenWidth * 0.03,
-              right: screenWidth * 0.03,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                buildSignUpText(),
-                buildSignUpFreeMessage(),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    buildNameField(),
-                    buildEmailField(),
-                    buildPasswordField(),
-                  ],
-                ),
-                buildLoginOption(),
-                buildSubmitButton(),
-              ],
-            ),
-          ),
+    return GetBuilder<SignUpController>(builder: (logic) {
+      return Scaffold(
+        body: Form(
+          key: _formKey,
+          child: SafeArea(
+              child: signUpController.isLoading.value
+                  ? Center(child: CircularProgressIndicator())
+                  : Container(
+                      alignment: Alignment.center,
+                      margin: EdgeInsets.only(
+                          top: screenHeight * 0.06,
+                          left: screenWidth * 0.03,
+                          right: screenWidth * 0.03),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          buildSignUpText(),
+                          buildSignUpFreeMessage(),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              buildNameField(),
+                              buildEmailField(),
+                              buildPasswordField(),
+                            ],
+                          ),
+                          buildLoginOption(),
+                          buildSubmitButton(),
+                        ],
+                      ),
+                    )),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget buildSignUpText() {
@@ -112,14 +98,16 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           if (value!.isEmpty) {
             return 'Please enter your name';
           }
-          return null;
         },
         hintText: 'Enter your Name',
         prefixIcon: Padding(
           padding: EdgeInsets.all(screenWidth * 0.04),
-          child: SvgPicture.asset(avatarIcon, height: screenHeight * 0.01),
+          child: SvgPicture.asset(
+            avatarIcon,
+            height: screenHeight * 0.01,
+          ),
         ),
-        controller: nameController,
+        controller: signUpController.nameController,
       ),
     );
   }
@@ -132,57 +120,56 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         validationFunction: (value) {
           if (value!.isEmpty) {
             return 'Please enter your email';
-          } else if (!RegExp(
-            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-          ).hasMatch(value)) {
+          } else if (!GetUtils.isEmail(value)) {
             return 'Please enter a valid email';
           }
-          return null;
         },
         hintText: 'Enter your email',
         prefixIcon: Padding(
           padding: EdgeInsets.all(screenWidth * 0.04),
-          child: SvgPicture.asset(mobileIcon),
+          child: SvgPicture.asset(
+            mobileIcon,
+          ),
         ),
-        controller: emailController,
+        controller: signUpController.emailController,
       ),
     );
   }
 
   Widget buildPasswordField() {
     return Container(
-      margin: EdgeInsets.only(top: screenHeight * 0.02),
-      child: CustomTextField(
-        validationFunction: (value) {
-          if (value!.isEmpty) {
-            return 'Please enter your password';
-          } else if (value.length < 6) {
-            return 'Password must be at least 6 characters';
-          }
-          return null;
-        },
-        obscureText: obscurePassword,
-        suffixIcon: PasswordVisibility(
-          obscurePassword: obscurePassword,
-          onTap: _togglePasswordVisibility,
-        ),
-        hintText: 'Enter your Password',
-        maxLines: 1,
-        prefixIcon: Padding(
-          padding: EdgeInsets.all(screenWidth * 0.04),
-          child: SvgPicture.asset(lockIcon),
-        ),
-        controller: passwordController,
-      ),
-    );
+        margin: EdgeInsets.only(top: screenHeight * 0.02),
+        child: Obx(
+          () => CustomTextField(
+            validationFunction: (value) {
+              if (value!.isEmpty) {
+                return 'Please enter your password';
+              } else if (value.length < 6) {
+                return 'Password must be at least 6 characters';
+              }
+            },
+            obscureText: signUpController.obscurePassword.value,
+            suffixIcon: PasswordVisibility(
+              obscurePassword: signUpController.obscurePassword.value,
+              onTap: signUpController.hidePassword,
+            ),
+            hintText: 'Enter your Password',
+            maxLines: 1,
+            prefixIcon: Padding(
+              padding: EdgeInsets.all(screenWidth * 0.04),
+              child: SvgPicture.asset(
+                lockIcon,
+              ),
+            ),
+            controller: signUpController.passwordController,
+          ),
+        ));
   }
 
   Widget buildLoginOption() {
     return Container(
       margin: EdgeInsets.only(
-        bottom: screenHeight * 0.02,
-        top: screenHeight * 0.02,
-      ),
+          bottom: screenHeight * 0.02, top: screenHeight * 0.02),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -192,10 +179,15 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             fontWeight: FontWeight.w700,
             color: AppColors().greyText,
           ),
-          SizedBox(width: screenWidth * 0.02),
+          SizedBox(
+            width: screenWidth * 0.02,
+          ),
           InkWell(
             onTap: () {
-              context.go('/login');
+              Get.to(() => LoginView(),
+                  transition: Transition.rightToLeft,
+                  duration: Duration(milliseconds: 800),
+                  curve: Curves.easeIn);
             },
             child: CustomText(
               text: "Login",
@@ -209,19 +201,31 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   }
 
   Widget buildSubmitButton() {
-    return Container(
-      height: 50,
-      margin: EdgeInsets.only(
-        left: screenWidth * 0.03,
-        right: screenWidth * 0.03,
-        bottom: screenHeight * 0.02,
-      ),
-      child: PrimaryButton(
-        text: "Sign Up",
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        onTap: _signUp,
-      ),
-    );
+    return Obx(() {
+      return signUpController.isLoading.value
+          ? Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: CircularProgressIndicator(
+                color: AppColors().secondary,
+              ),
+            )
+          : Container(
+              height: 50,
+              margin: EdgeInsets.only(
+                  left: screenWidth * 0.03,
+                  right: screenWidth * 0.03,
+                  bottom: screenHeight * 0.02),
+              child: PrimaryButton(
+                text: "Sign Up",
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                onTap: () {
+                  if (_formKey.currentState!.validate()) {
+                    signUpController.signUp();
+                  }
+                },
+              ),
+            );
+    });
   }
 }

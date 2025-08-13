@@ -1,39 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get/get.dart';
 import 'package:maxtivity/config/theme/app_theme.dart';
+import 'package:maxtivity/modules/home/view/home_view.dart';
+import 'package:maxtivity/modules/splash/view/splash_screen.dart';
+import 'package:maxtivity/utils/services/object_box.dart';
 import 'package:sizer/sizer.dart';
-import 'package:maxtivity/navigation/app_router.dart';
 
-import 'firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
-
-void main() async {
+late ObjectBox objectBox;
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  runApp(ProviderScope(child: MyApp()));
+  objectBox = await ObjectBox.create();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
+  runApp(const MyApp());
 }
 
-class MyApp extends ConsumerWidget {
-  const MyApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
-  // GoRouter instance is provided by Riverpod
-
+  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Sizer(
       builder: (context, orientation, deviceType) {
-        return MaterialApp.router(
+        return GetMaterialApp(
           title: 'Maxtivity',
           debugShowCheckedModeBanner: false,
           theme: AppTheme().appLightTheme,
-          routerConfig: ref.watch(goRouterProvider),
+          routes: {
+            '/': (context) => SplashPage(),
+            homeRoute: (context) => HomeView(),
+          },
         );
       },
     );

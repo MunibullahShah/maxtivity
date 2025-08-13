@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:maxtivity/constants/endpoints.dart';
 
+import '../../modules/login/model/login_model.dart';
 import 'backend_calls.dart';
 
 class BackendRepository {
