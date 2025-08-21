@@ -75,12 +75,12 @@ class CustomDrawer extends StatelessWidget {
               onTap: () {
                 Get.off(() => HistoryView(),
                     transition: Transition.rightToLeft,
-                    duration: 800.milliseconds,
+                    duration: 400.milliseconds,
                     curve: Curves.easeIn);
               },
             ),
             const Spacer(),
-            _drawerLogoutItem(),
+            // _drawerLogoutItem(),
             SizedBox(
               height: screenHeight * 0.04,
             ),

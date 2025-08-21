@@ -1,16 +1,19 @@
 import 'package:maxtivity/constants/app_constants.dart';
 import 'package:maxtivity/objectbox.g.dart';
 import 'package:maxtivity/utils/models/user_model.dart';
+import 'package:maxtivity/models/pomodoro_session.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 class ObjectBox {
   late final Store store;
   late final Box<UserModel> userBox;
+  late final Box<PomodoroSession> pomodoroBox;
   // late final Box<DataModel> dataBox;
 
   ObjectBox._create(this.store) {
     userBox = Box<UserModel>(store);
+    pomodoroBox = Box<PomodoroSession>(store);
     // dataBox = Box<DataModel>(store);
   }
 

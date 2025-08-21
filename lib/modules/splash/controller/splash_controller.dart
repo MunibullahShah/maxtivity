@@ -10,14 +10,9 @@ class SplashController extends GetxController {
   @override
   void onInit() {
     Future.delayed(
-      const Duration(seconds: 2),
+      const Duration(seconds: 1),
       () async {
-        jwtToken = await LocalStorageService().getToken() ?? "";
-        if (jwtToken != "") {
-          Get.off(() => HomeView());
-        } else {
-          Get.off(() => LoginView());
-        }
+        Get.off(() => HomeView());
       },
     );
     super.onInit();
