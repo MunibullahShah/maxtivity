@@ -33,33 +33,33 @@
       "relations": []
     },
     {
-      "id": "2:1234601042899724204",
-      "lastPropertyId": "5:2915713955775259470",
-      "name": "PomodoroSession",
+      "id": "3:3305385553082592497",
+      "lastPropertyId": "5:6404035276237557966",
+      "name": "HistoryModel",
       "properties": [
         {
-          "id": "1:1532748945078343598",
+          "id": "1:4041126987080126094",
           "name": "id",
           "type": 6,
           "flags": 1
         },
         {
-          "id": "2:3000166873401083636",
+          "id": "2:4783796232353874789",
           "name": "startTime",
           "type": 10
         },
         {
-          "id": "3:5273697124389235563",
+          "id": "3:6067685895455407407",
           "name": "endTime",
           "type": 10
         },
         {
-          "id": "4:6762193849829351573",
+          "id": "4:2552034927813281190",
           "name": "durationMinutes",
           "type": 6
         },
         {
-          "id": "5:2915713955775259470",
+          "id": "5:6404035276237557966",
           "name": "completed",
           "type": 1
         }
@@ -67,15 +67,23 @@
       "relations": []
     }
   ],
-  "lastEntityId": "2:1234601042899724204",
+  "lastEntityId": "3:3305385553082592497",
   "lastIndexId": "0:0",
   "lastRelationId": "0:0",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
-  "retiredEntityUids": [],
+  "retiredEntityUids": [
+    1234601042899724204
+  ],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredPropertyUids": [
+    1532748945078343598,
+    3000166873401083636,
+    5273697124389235563,
+    6762193849829351573,
+    2915713955775259470
+  ],
   "retiredRelationUids": [],
   "version": 1
 }

@@ -1,22 +1,19 @@
+import 'package:objectbox/objectbox.dart';
+
+@Entity()
 class HistoryModel {
-  DateTime? startTime;
-  DateTime? endTime;
+  @Id()
+  int id = 0;
+
+  DateTime startTime;
+  DateTime endTime;
+  int durationMinutes;
+  bool completed;
 
   HistoryModel({
-    this.startTime,
-    this.endTime,
+    required this.startTime,
+    required this.endTime,
+    required this.durationMinutes,
+    required this.completed,
   });
-
-  HistoryModel.fromJson(Map<String, dynamic> json) {
-    startTime =
-        json['startTime'] != null ? DateTime.parse(json['startTime']) : null;
-    endTime = json['endTime'] != null ? DateTime.parse(json['endTime']) : null;
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['endTime'] = startTime;
-    data['endTime'] = endTime;
-    return data;
-  }
 }

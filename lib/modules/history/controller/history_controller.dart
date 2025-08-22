@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:maxtivity/modules/history/model/history_model.dart';
-import 'package:maxtivity/modules/history/repository/history_repository.dart';
+import 'package:maxtivity/main.dart';
 
 class HistoryController extends GetxController {
   RxBool isLoading = false.obs;
@@ -12,10 +12,12 @@ class HistoryController extends GetxController {
     super.onInit();
   }
 
-  void getHistory() async {
+  void getHistory() {
     isLoading.value = true;
     try {
-      historyList = await HistoryRepository().getHistory();
+      historyList = objectBox.historyBox.getAll();
+      historyList.sort(
+          (a, b) => b.startTime.compareTo(a.startTime)); // Sort by newest first
       isLoading.value = false;
       update();
     } catch (e) {

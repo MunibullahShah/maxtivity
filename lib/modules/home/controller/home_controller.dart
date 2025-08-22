@@ -1,15 +1,25 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:maxtivity/modules/home/repository/home_repository.dart';
+import 'package:maxtivity/modules/history/model/history_model.dart';
+import 'package:maxtivity/main.dart';
 import 'package:maxtivity/utils/ui/snackbar.dart';
 
 class HomeController extends GetxController {
   late Timer timer;
   double progressValue = 1;
   int secondsPassed = 0;
-  int timeInterval = 25;
+  final List<Map<String, dynamic>> timeOptions = [
+    {'label': '5 min', 'value': 5},
+    {'label': '10 min', 'value': 10},
+    {'label': '15 min', 'value': 15},
+    {'label': '25 min', 'value': 25},
+    {'label': '30 min', 'value': 30},
+    {'label': '45 min', 'value': 45},
+    {'label': '60 min', 'value': 60},
+  ];
+  int selectedTimeIndex = 1; // Default to 25 minutes
+  int get timeInterval => timeOptions[selectedTimeIndex]['value'];
   bool isPaused = true;
   DateTime? startTime;
   DateTime? endTime;
@@ -47,25 +57,45 @@ class HomeController extends GetxController {
     int minutes = (timeInterval * 60) - secondsPassed;
     int min = minutes ~/ 60;
     int sec = minutes % 60;
-    return "${min}:${sec}";
+    return "${min}:${sec.toString().padLeft(2, '0')}";
   }
 
   void resetTimer() {
-    timer.cancel();
+    if (timer != null && timer.isActive) {
+      timer.cancel();
+    }
     isPaused = true;
     secondsPassed = 0;
     progressValue = 1;
     update();
   }
 
-  void saveTime() async {
+  void setTimeInterval(int index) {
+    if (index >= 0 && index < timeOptions.length) {
+      selectedTimeIndex = index;
+      resetTimer();
+    }
+  }
+
+  void saveTime() {
     try {
       endTime = DateTime.now();
-      String response = await HomeRepository().saveTime(startTime!, endTime!);
-      if (response == "200") {
+      if (startTime != null && endTime != null) {
+        final session = HistoryModel(
+          startTime: startTime!,
+          endTime: endTime!,
+          durationMinutes: timeInterval,
+          completed: secondsPassed >= (timeInterval * 60),
+        );
+
+        objectBox.historyBox.put(session);
         getSuccessSnackbar(
-            title: "Success", message: "Time Saved Successfully");
+          title: "Success",
+          message: "Session saved successfully",
+        );
       }
-    } catch (e) {}
+    } catch (e) {
+      print('Error saving session: $e');
+    }
   }
 }

@@ -14,9 +14,9 @@ class HistoryRepository {
         return [];
       }
       List<HistoryModel> historyList = [];
-      decodedResponse['message']["data"].forEach((element) {
-        historyList.add(HistoryModel.fromJson(element));
-      });
+      // decodedResponse['message']["data"].forEach((element) {
+      //   historyList.add(HistoryModel.fromJson(element));
+      // });
       return historyList;
     } catch (e) {
       throw Exception(e);

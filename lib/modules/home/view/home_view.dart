@@ -49,22 +49,62 @@ class HomeView extends StatelessWidget {
                     },
                   ),
                 ),
-                Stack(
-                  alignment: Alignment.center,
+                Column(
                   children: [
-                    SizedBox(
-                      height: screenHeight * 0.2,
-                      width: screenHeight * 0.2,
-                      child: CircularProgressIndicator(
-                        color: AppColors().secondary,
-                        value: logic.progressValue,
-                        strokeWidth: 5,
-                        strokeCap: StrokeCap.round,
+                    Container(
+                      alignment: Alignment.center,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: AppColors().secondary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: DropdownButton<int>(
+                          value: logic.selectedTimeIndex,
+                          icon: Icon(Icons.arrow_drop_down,
+                              color: AppColors().secondary),
+                          elevation: 3,
+                          style: TextStyle(color: AppColors().secondary),
+                          underline: Container(height: 0),
+                          onChanged: (int? index) {
+                            if (index != null) logic.setTimeInterval(index);
+                          },
+                          items: logic.timeOptions
+                              .asMap()
+                              .entries
+                              .map<DropdownMenuItem<int>>(
+                                (entry) => DropdownMenuItem<int>(
+                                  value: entry.key,
+                                  child: CustomText(
+                                    text: entry.value['label'],
+                                    fontSize: 16,
+                                    color: AppColors().secondary,
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
                       ),
                     ),
-                    CustomText(
-                      text: logic.getMinutes(),
-                      fontSize: 18,
+                    SizedBox(height: screenHeight * 0.05),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox(
+                          height: screenHeight * 0.2,
+                          width: screenHeight * 0.2,
+                          child: CircularProgressIndicator(
+                            color: AppColors().secondary,
+                            value: logic.progressValue,
+                            strokeWidth: 5,
+                            strokeCap: StrokeCap.round,
+                          ),
+                        ),
+                        CustomText(
+                          text: logic.getMinutes(),
+                          fontSize: 18,
+                        ),
+                      ],
                     ),
                   ],
                 ),
