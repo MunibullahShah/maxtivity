@@ -1,0 +1,44 @@
+Codemap Diff Report — 2026-04-17 (rev 2)
+==========================================
+
+CHANGE MAGNITUDE: >30% (full update applied without prompt)
+
+KEY CORRECTIONS
+---------------
+
+DATA_LAYER.md
+  - UserModel: was complex (userId, fullName, profileImage, createdAt, updatedAt, bio)
+    ACTUAL: simple (id?, name?, email?, password?) — @Id(assignable: true)
+  - HistoryModel: was complex (sessionId, userId, notes, category, isCompleted, isBreak, pomodoroCount)
+    ACTUAL: simple (id, startTime, endTime, durationMinutes, completed)
+  - Removed fabricated ObjectBox schema JSON, query examples with non-existent fields
+  - Removed fabricated validation helpers and copyWith patterns
+
+MODULES.md
+  - HomeController.selectedTimeIndex default was "1 = 25 min"
+    ACTUAL: index 1 = 10 min (timeOptions[1] = {'label': '10 min', 'value': 10})
+  - HomeController had fabricated methods: skipSession(), resumeTimer(), selectTimeOption()
+    ACTUAL: setTimeInterval(int), pauseTimer({bool pause}), saveTime()
+  - HomeView: was described with AppBar, Skip button, Session counter
+    ACTUAL: no AppBar; SidebarButton + DropdownButton + CircularProgress + Start/Pause+Reset buttons only
+  - HistoryController: was described with HistoryRepository dep, filter/stats methods
+    ACTUAL: reads objectBox directly, only getHistory() method
+  - HistoryView: was described with duration, notes, category, stats, filters
+    ACTUAL: only shows Start Time and End Time per card
+  - HistoryModel.startTime/endTime accessed via null-safe (!) in view (.startTime!)
+  - CustomDrawer logout is COMMENTED OUT (not active)
+  - HomeRepository: only has saveTime() HTTP call; local ObjectBox save is in HomeController directly
+
+ARCHITECTURE NOTES
+------------------
+- Login/SignUp modules may still have placeholder content in codemaps (not verified against source)
+- HistoryRepository file exists but its actual implementation was not read; MODULES.md notes
+  that HistoryController does NOT use it (reads objectBox directly)
+- path_provider and path packages are used by ObjectBox (not listed in pubspec as explicit deps;
+  likely transitive)
+
+FILES NOT CHANGED
+-----------------
+- APP_ARCHITECTURE.md — still accurate at the pattern level
+- UI_COMPONENTS.md — not verified this run
+- UTILS_SERVICES.md — not verified this run
