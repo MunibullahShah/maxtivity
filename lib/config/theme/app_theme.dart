@@ -24,7 +24,7 @@ class AppTheme {
         iconTheme: IconThemeData(color: AppColors().darkActive, size: 26),
       ),
       unselectedWidgetColor: AppColors().normalActive,
-      bottomAppBarTheme: BottomAppBarTheme(
+      bottomAppBarTheme: BottomAppBarThemeData(
         color: AppColors().primary,
         elevation: 15,
       ),
@@ -193,7 +193,7 @@ class AppTheme {
         iconTheme: IconThemeData(color: AppColors().lightActiveDark, size: 26),
       ),
       unselectedWidgetColor: AppColors().normalActive,
-      bottomAppBarTheme: BottomAppBarTheme(
+      bottomAppBarTheme: BottomAppBarThemeData(
         color: AppColors().primaryDark,
         elevation: 15,
       ),

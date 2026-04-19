@@ -4,17 +4,18 @@ import 'package:get/get.dart';
 import 'package:maxtivity/constants/app_constants.dart';
 import 'package:maxtivity/constants/asset_paths.dart';
 import 'package:maxtivity/modules/history/view/history_view.dart';
+import 'package:maxtivity/modules/home/controller/home_controller.dart';
 import 'package:maxtivity/modules/home/view/home_view.dart';
-import 'package:maxtivity/modules/login/view/login_view.dart';
+import 'package:maxtivity/modules/login/view/firebase_login_sheet.dart';
+import 'package:maxtivity/utils/services/firebase_auth_service.dart';
 import 'package:maxtivity/utils/ui/buttons/side_bar_button.dart';
 import 'package:maxtivity/utils/ui/custom_text.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../config/theme/app_colors.dart';
-import '../../services/local_storage_service.dart';
 
 class CustomDrawer extends StatelessWidget {
-  CustomDrawer({Key? key}) : super(key: key);
+  const CustomDrawer({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -57,12 +58,13 @@ class CustomDrawer extends StatelessWidget {
                 iconWidth: screenWidth * 0.06,
                 title: "Home",
                 icon: homeIcon,
-                onTap: () {
-                  Get.off(() => HomeView(),
-                      transition: Transition.rightToLeft,
-                      duration: 800.milliseconds,
-                      curve: Curves.easeIn);
-                }),
+                onTap: () => _navigateTo(
+                      context,
+                      () => Get.off(() => HomeView(),
+                          transition: Transition.rightToLeft,
+                          duration: 800.milliseconds,
+                          curve: Curves.easeIn),
+                    )),
             SizedBox(
               height: screenHeight * 0.018,
             ),
@@ -72,15 +74,33 @@ class CustomDrawer extends StatelessWidget {
               title: "History",
               icon: historyIconf,
               showBorder: true,
-              onTap: () {
-                Get.off(() => HistoryView(),
-                    transition: Transition.rightToLeft,
-                    duration: 400.milliseconds,
-                    curve: Curves.easeIn);
-              },
+              onTap: () => _navigateTo(
+                    context,
+                    () => Get.off(() => HistoryView(),
+                        transition: Transition.rightToLeft,
+                        duration: 400.milliseconds,
+                        curve: Curves.easeIn),
+                  ),
             ),
             const Spacer(),
-            // _drawerLogoutItem(),
+            Obx(() {
+              final auth = FirebaseAuthService.to;
+              return _navigationTile(
+                iconHeight: screenWidth * 0.06,
+                iconWidth: screenWidth * 0.06,
+                title: auth.isLoggedIn ? 'Sign Out' : 'Sign In',
+                icon: avatarIcon,
+                showBorder: false,
+                onTap: () async {
+                  if (auth.isLoggedIn) {
+                    await auth.signOut();
+                  } else {
+                    Get.back();
+                    FirebaseLoginSheet.show(context);
+                  }
+                },
+              );
+            }),
             SizedBox(
               height: screenHeight * 0.04,
             ),
@@ -88,12 +108,41 @@ class CustomDrawer extends StatelessWidget {
         ));
   }
 
+  void _navigateTo(BuildContext context, VoidCallback navigate) {
+    final home = Get.find<HomeController>();
+    if (home.isLocked && !home.isPaused) {
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Timer is running'),
+          content: const Text(
+              'The timer is still running. Are you sure you want to leave?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Stay'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                home.resetTimer();
+                navigate();
+              },
+              child: const Text('Leave'),
+            ),
+          ],
+        ),
+      );
+    } else {
+      navigate();
+    }
+  }
+
   _navigationTile(
       {required double iconHeight,
       required double iconWidth,
       required String title,
       required String icon,
-      bool? showDropDown,
       bool showBorder = true,
       required Function() onTap}) {
     return InkWell(
@@ -123,7 +172,10 @@ class CustomDrawer extends StatelessWidget {
                 icon,
                 width: iconHeight,
                 height: iconWidth,
-                color: AppColors().secondary,
+                colorFilter: ColorFilter.mode(
+                  AppColors().secondary,
+                  BlendMode.srcIn,
+                ),
               ),
               SizedBox(
                 width: screenWidth * 0.02,
@@ -141,36 +193,4 @@ class CustomDrawer extends StatelessWidget {
     );
   }
 
-  Widget _drawerLogoutItem() {
-    return InkWell(
-      onTap: () async {
-        await LocalStorageService().deleteAll();
-        Get.offAll(() => LoginView());
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.07),
-        height: 7.h,
-        width: screenWidth * 0.75,
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            SvgPicture.asset(
-              logoutIcon,
-              width: screenWidth * 0.06,
-              height: screenWidth * 0.06,
-            ),
-            SizedBox(
-              width: screenWidth * 0.02,
-            ),
-            CustomText(
-              text: 'Logout'.tr,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: AppColors().red,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

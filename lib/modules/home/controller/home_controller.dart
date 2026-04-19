@@ -1,9 +1,16 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:maxtivity/modules/history/model/history_model.dart';
 import 'package:maxtivity/main.dart';
+import 'package:maxtivity/utils/services/alarm_service.dart';
+import 'package:maxtivity/utils/services/firebase_auth_service.dart';
+import 'package:maxtivity/utils/services/firestore_service.dart';
+import 'package:maxtivity/utils/services/local_storage_service.dart';
 import 'package:maxtivity/utils/ui/snackbar.dart';
+
+const _lockKey = 'is_locked';
 
 class HomeController extends GetxController {
   late Timer timer;
@@ -17,22 +24,39 @@ class HomeController extends GetxController {
     {'label': '30 min', 'value': 30},
     {'label': '45 min', 'value': 45},
     {'label': '60 min', 'value': 60},
+    {'label': 'Custom...', 'value': -1},
   ];
-  int selectedTimeIndex = 1; // Default to 25 minutes
-  int get timeInterval => timeOptions[selectedTimeIndex]['value'];
+  int selectedTimeIndex = 1;
+  int? customMinutes;
+
+  int get timeInterval {
+    if (selectedTimeIndex == timeOptions.length - 1) {
+      return customMinutes ?? 25;
+    }
+    return timeOptions[selectedTimeIndex]['value'];
+  }
+
   bool isPaused = true;
+  bool isLocked = false;
   DateTime? startTime;
   DateTime? endTime;
 
   @override
   void onInit() {
     super.onInit();
+    _loadLockState();
+  }
+
+  Future<void> _loadLockState() async {
+    final stored = await LocalStorageService().readBool(_lockKey);
+    isLocked = stored ?? false;
+    update();
   }
 
   void startTimer() {
     isPaused = false;
     startTime = DateTime.now();
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       progressValue =
           ((timeInterval * 60) - secondsPassed) / (timeInterval * 60);
       update();
@@ -57,11 +81,11 @@ class HomeController extends GetxController {
     int minutes = (timeInterval * 60) - secondsPassed;
     int min = minutes ~/ 60;
     int sec = minutes % 60;
-    return "${min}:${sec.toString().padLeft(2, '0')}";
+    return "$min:${sec.toString().padLeft(2, '0')}";
   }
 
   void resetTimer() {
-    if (timer != null && timer.isActive) {
+    if (timer.isActive) {
       timer.cancel();
     }
     isPaused = true;
@@ -73,8 +97,22 @@ class HomeController extends GetxController {
   void setTimeInterval(int index) {
     if (index >= 0 && index < timeOptions.length) {
       selectedTimeIndex = index;
-      resetTimer();
+      if (index != timeOptions.length - 1) {
+        resetTimer();
+      }
+      update();
     }
+  }
+
+  void setCustomTime(int minutes) {
+    customMinutes = minutes;
+    resetTimer();
+  }
+
+  void toggleLock() {
+    isLocked = !isLocked;
+    LocalStorageService().writeBool(_lockKey, value: isLocked);
+    update();
   }
 
   void saveTime() {
@@ -89,13 +127,18 @@ class HomeController extends GetxController {
         );
 
         objectBox.historyBox.put(session);
+        AlarmService().playAlarm();
+        final auth = FirebaseAuthService.to;
+        if (auth.isLoggedIn) {
+          FirestoreService().syncSession(session, auth.uid!);
+        }
         getSuccessSnackbar(
           title: "Success",
           message: "Session saved successfully",
         );
       }
     } catch (e) {
-      print('Error saving session: $e');
+      debugPrint('Error saving session: $e');
     }
   }
 }
