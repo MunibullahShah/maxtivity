@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:maxtivity/modules/history/model/history_model.dart';
 import 'package:maxtivity/main.dart';
@@ -22,7 +23,27 @@ class HistoryController extends GetxController {
       update();
     } catch (e) {
       isLoading.value = false;
-      print("Error in History: $e");
+      debugPrint("Error in History: $e");
     }
+  }
+
+  /// Removes a single saved session and refreshes the list.
+  void deleteSession(int id) {
+    try {
+      objectBox.historyBox.remove(id);
+    } catch (e) {
+      debugPrint("Error deleting session: $e");
+    }
+    getHistory();
+  }
+
+  /// Clears every saved session from local storage.
+  void clearAll() {
+    try {
+      objectBox.historyBox.removeAll();
+    } catch (e) {
+      debugPrint("Error clearing history: $e");
+    }
+    getHistory();
   }
 }

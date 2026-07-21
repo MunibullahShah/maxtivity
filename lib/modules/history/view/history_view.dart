@@ -30,14 +30,22 @@ class HistoryView extends StatelessWidget {
           ),
           child: Column(
             children: [
-              Container(
-                alignment: Alignment.topLeft,
-                child: SidebarButton(
-                  sidebarIcon: sidebarIcon,
-                  onTap: () {
-                    _key.currentState!.openDrawer();
-                  },
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SidebarButton(
+                    sidebarIcon: sidebarIcon,
+                    onTap: () {
+                      _key.currentState!.openDrawer();
+                    },
+                  ),
+                  if (logic.historyList.isNotEmpty)
+                    TextButton.icon(
+                      onPressed: () => _confirmClearAll(context, logic),
+                      icon: const Icon(Icons.delete_sweep_outlined),
+                      label: const Text('Clear All'),
+                    ),
+                ],
               ),
               SizedBox(
                 height: screenHeight * 0.02,
@@ -65,34 +73,62 @@ class HistoryView extends StatelessWidget {
                                   elevation: 5,
                                   child: Padding(
                                     padding: const EdgeInsets.all(16.0),
-                                    child: Column(
+                                    child: Row(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        CustomText(
-                                          text: 'Start Time:',
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              CustomText(
+                                                text: 'Start Time:',
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              CustomText(
+                                                text: logic
+                                                    .historyList[index]
+                                                    .startTime
+                                                    .toLocal()
+                                                    .toFormattedDateTimeString(),
+                                                fontSize: 14,
+                                              ),
+                                              SizedBox(height: 16),
+                                              CustomText(
+                                                text: 'End Time:',
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              CustomText(
+                                                text: logic
+                                                    .historyList[index]
+                                                    .endTime
+                                                    .toLocal()
+                                                    .toFormattedDateTimeString(),
+                                                fontSize: 14,
+                                              ),
+                                              SizedBox(height: 16),
+                                              CustomText(
+                                                text:
+                                                    'Duration: ${logic.historyList[index].durationMinutes} min'
+                                                    '${logic.historyList[index].completed ? '  •  Completed' : '  •  Incomplete'}',
+                                                fontSize: 14,
+                                              ),
+                                            ],
+                                          ),
                                         ),
-                                        CustomText(
-                                          text: logic
-                                              .historyList[index].startTime!
-                                              .toLocal()
-                                              .toFormattedDateTimeString(),
-                                          fontSize: 14,
-                                        ),
-                                        SizedBox(height: 16),
-                                        CustomText(
-                                          text: 'End Time:',
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        CustomText(
-                                          text: logic
-                                              .historyList[index].endTime!
-                                              .toLocal()
-                                              .toFormattedDateTimeString(),
-                                          fontSize: 14,
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.delete_outline,
+                                          ),
+                                          tooltip: 'Delete session',
+                                          onPressed: () => _confirmDelete(
+                                            context,
+                                            logic,
+                                            logic.historyList[index].id,
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -107,5 +143,53 @@ class HistoryView extends StatelessWidget {
         ),
       );
     });
+  }
+
+  void _confirmDelete(
+      BuildContext context, HistoryController logic, int id) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete session'),
+        content: const Text('Remove this session from your history?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              logic.deleteSession(id);
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmClearAll(BuildContext context, HistoryController logic) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Clear history'),
+        content:
+            const Text('Delete all saved sessions? This cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              logic.clearAll();
+            },
+            child: const Text('Clear All'),
+          ),
+        ],
+      ),
+    );
   }
 }

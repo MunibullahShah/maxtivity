@@ -11,6 +11,8 @@ import 'package:maxtivity/utils/services/local_storage_service.dart';
 import 'package:maxtivity/utils/ui/snackbar.dart';
 
 const _lockKey = 'is_locked';
+const _selectedIndexKey = 'selected_time_index';
+const _customSecondsKey = 'custom_duration_seconds';
 
 class HomeController extends GetxController {
   late Timer timer;
@@ -27,14 +29,19 @@ class HomeController extends GetxController {
     {'label': 'Custom...', 'value': -1},
   ];
   int selectedTimeIndex = 1;
-  int? customMinutes;
+  int? customDurationSeconds;
 
-  int get timeInterval {
+  int get totalSeconds {
     if (selectedTimeIndex == timeOptions.length - 1) {
-      return customMinutes ?? 25;
+      return customDurationSeconds ?? (25 * 60);
     }
-    return timeOptions[selectedTimeIndex]['value'];
+    return timeOptions[selectedTimeIndex]['value'] * 60;
   }
+
+  /// Whole minutes of the currently configured custom duration, or `null`
+  /// when no custom duration has been set. Used to label the dropdown option.
+  int? get customMinutes =>
+      customDurationSeconds == null ? null : customDurationSeconds! ~/ 60;
 
   bool isPaused = true;
   bool isLocked = false;
@@ -44,12 +51,26 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _loadLockState();
+    _loadPersistedState();
   }
 
-  Future<void> _loadLockState() async {
-    final stored = await LocalStorageService().readBool(_lockKey);
-    isLocked = stored ?? false;
+  /// Restores the lock state and the last-selected session duration so the
+  /// user's preferences survive an app restart.
+  Future<void> _loadPersistedState() async {
+    final storage = LocalStorageService();
+    isLocked = (await storage.readBool(_lockKey)) ?? false;
+
+    final savedCustom = await storage.readInt(_customSecondsKey);
+    if (savedCustom != null) {
+      customDurationSeconds = savedCustom;
+    }
+
+    final savedIndex = await storage.readInt(_selectedIndexKey);
+    if (savedIndex != null && savedIndex >= 0 && savedIndex < timeOptions.length) {
+      selectedTimeIndex = savedIndex;
+    }
+
+    progressValue = 1;
     update();
   }
 
@@ -57,11 +78,10 @@ class HomeController extends GetxController {
     isPaused = false;
     startTime = DateTime.now();
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      progressValue =
-          ((timeInterval * 60) - secondsPassed) / (timeInterval * 60);
+      progressValue = (totalSeconds - secondsPassed) / totalSeconds;
       update();
       secondsPassed++;
-      if (secondsPassed == (timeInterval * 60)) {
+      if (secondsPassed == totalSeconds) {
         saveTime();
         resetTimer();
       }
@@ -78,9 +98,9 @@ class HomeController extends GetxController {
   }
 
   String getMinutes() {
-    int minutes = (timeInterval * 60) - secondsPassed;
-    int min = minutes ~/ 60;
-    int sec = minutes % 60;
+    int remaining = totalSeconds - secondsPassed;
+    int min = remaining ~/ 60;
+    int sec = remaining % 60;
     return "$min:${sec.toString().padLeft(2, '0')}";
   }
 
@@ -97,6 +117,7 @@ class HomeController extends GetxController {
   void setTimeInterval(int index) {
     if (index >= 0 && index < timeOptions.length) {
       selectedTimeIndex = index;
+      LocalStorageService().writeInt(_selectedIndexKey, index);
       if (index != timeOptions.length - 1) {
         resetTimer();
       }
@@ -104,8 +125,9 @@ class HomeController extends GetxController {
     }
   }
 
-  void setCustomTime(int minutes) {
-    customMinutes = minutes;
+  void setCustomTime(int minutes, int seconds) {
+    customDurationSeconds = minutes * 60 + seconds;
+    LocalStorageService().writeInt(_customSecondsKey, customDurationSeconds!);
     resetTimer();
   }
 
@@ -122,8 +144,8 @@ class HomeController extends GetxController {
         final session = HistoryModel(
           startTime: startTime!,
           endTime: endTime!,
-          durationMinutes: timeInterval,
-          completed: secondsPassed >= (timeInterval * 60),
+          durationMinutes: totalSeconds ~/ 60,
+          completed: secondsPassed >= totalSeconds,
         );
 
         objectBox.historyBox.put(session);

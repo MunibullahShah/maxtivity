@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:maxtivity/config/theme/app_colors.dart';
@@ -196,18 +195,78 @@ class HomeView extends StatelessWidget {
   }
 
   void _showCustomTimeDialog(BuildContext context, HomeController logic) {
-    final controller = TextEditingController();
+    int selectedMinutes = 25;
+    int selectedSeconds = 0;
+    final minutesController =
+        FixedExtentScrollController(initialItem: selectedMinutes);
+    final secondsController =
+        FixedExtentScrollController(initialItem: selectedSeconds);
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Custom Time'),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          decoration: const InputDecoration(
-            hintText: 'Enter minutes (1–120)',
-            suffixText: 'min',
+        content: SizedBox(
+          height: 160,
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  children: [
+                    const Text('Min',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Expanded(
+                      child: ListWheelScrollView.useDelegate(
+                        controller: minutesController,
+                        itemExtent: 40,
+                        perspective: 0.003,
+                        diameterRatio: 1.5,
+                        physics: const FixedExtentScrollPhysics(),
+                        onSelectedItemChanged: (i) => selectedMinutes = i,
+                        childDelegate: ListWheelChildBuilderDelegate(
+                          childCount: 121,
+                          builder: (_, i) => Center(
+                            child: Text(i.toString().padLeft(2, '0'),
+                                style: const TextStyle(fontSize: 20)),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: Text(':',
+                    style:
+                        TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    const Text('Sec',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Expanded(
+                      child: ListWheelScrollView.useDelegate(
+                        controller: secondsController,
+                        itemExtent: 40,
+                        perspective: 0.003,
+                        diameterRatio: 1.5,
+                        physics: const FixedExtentScrollPhysics(),
+                        onSelectedItemChanged: (i) => selectedSeconds = i,
+                        childDelegate: ListWheelChildBuilderDelegate(
+                          childCount: 60,
+                          builder: (_, i) => Center(
+                            child: Text(i.toString().padLeft(2, '0'),
+                                style: const TextStyle(fontSize: 20)),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
         actions: [
@@ -217,10 +276,9 @@ class HomeView extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              final value = int.tryParse(controller.text);
-              if (value != null && value >= 1 && value <= 120) {
+              if (selectedMinutes > 0 || selectedSeconds > 0) {
                 logic.setTimeInterval(logic.timeOptions.length - 1);
-                logic.setCustomTime(value);
+                logic.setCustomTime(selectedMinutes, selectedSeconds);
                 Navigator.of(ctx).pop();
               }
             },

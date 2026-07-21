@@ -6,6 +6,7 @@ import 'package:maxtivity/constants/asset_paths.dart';
 import 'package:maxtivity/modules/history/view/history_view.dart';
 import 'package:maxtivity/modules/home/controller/home_controller.dart';
 import 'package:maxtivity/modules/home/view/home_view.dart';
+import 'package:maxtivity/modules/stats/view/stats_view.dart';
 import 'package:maxtivity/modules/login/view/firebase_login_sheet.dart';
 import 'package:maxtivity/utils/services/firebase_auth_service.dart';
 import 'package:maxtivity/utils/ui/buttons/side_bar_button.dart';
@@ -82,6 +83,23 @@ class CustomDrawer extends StatelessWidget {
                         curve: Curves.easeIn),
                   ),
             ),
+            SizedBox(
+              height: screenHeight * 0.018,
+            ),
+            _navigationTile(
+              iconHeight: screenWidth * 0.06,
+              iconWidth: screenWidth * 0.06,
+              title: "Statistics",
+              materialIcon: Icons.bar_chart_rounded,
+              showBorder: true,
+              onTap: () => _navigateTo(
+                    context,
+                    () => Get.off(() => StatsView(),
+                        transition: Transition.rightToLeft,
+                        duration: 400.milliseconds,
+                        curve: Curves.easeIn),
+                  ),
+            ),
             const Spacer(),
             Obx(() {
               final auth = FirebaseAuthService.to;
@@ -142,7 +160,8 @@ class CustomDrawer extends StatelessWidget {
       {required double iconHeight,
       required double iconWidth,
       required String title,
-      required String icon,
+      String? icon,
+      IconData? materialIcon,
       bool showBorder = true,
       required Function() onTap}) {
     return InkWell(
@@ -168,15 +187,21 @@ class CustomDrawer extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SvgPicture.asset(
-                icon,
-                width: iconHeight,
-                height: iconWidth,
-                colorFilter: ColorFilter.mode(
-                  AppColors().secondary,
-                  BlendMode.srcIn,
-                ),
-              ),
+              materialIcon != null
+                  ? Icon(
+                      materialIcon,
+                      size: iconWidth,
+                      color: AppColors().secondary,
+                    )
+                  : SvgPicture.asset(
+                      icon!,
+                      width: iconHeight,
+                      height: iconWidth,
+                      colorFilter: ColorFilter.mode(
+                        AppColors().secondary,
+                        BlendMode.srcIn,
+                      ),
+                    ),
               SizedBox(
                 width: screenWidth * 0.02,
               ),

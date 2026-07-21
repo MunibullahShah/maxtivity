@@ -37,6 +37,16 @@ class LocalStorageService {
     return storage.setBool(key, value);
   }
 
+  Future<bool> writeInt(String key, int value) async {
+    final storage = await SharedPreferences.getInstance();
+    return storage.setInt(key, value);
+  }
+
+  Future<int?> readInt(String key) async {
+    final storage = await SharedPreferences.getInstance();
+    return storage.getInt(key);
+  }
+
   Future<bool> deleteAll() async {
     final storage = await SharedPreferences.getInstance();
     return storage.clear();
