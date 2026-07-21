@@ -48,3 +48,16 @@ app.*.map.json
 
 # ignore objectBox
 objectbox.g.dart
+
+# Firebase config — contains project identifiers / API keys.
+# These are kept in the working tree for local builds but should NOT be
+# committed on a public repo. If any are already tracked, remove them from
+# the index with `git rm --cached <file>` (the local copy is preserved).
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+lib/firebase_options.dart
+
+# Signing secrets (belt-and-suspenders; also ignored in android/.gitignore)
+android/key.properties
+**/*.jks
+**/*.keystore
